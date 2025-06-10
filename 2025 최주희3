@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+// 피호출 함수: 두 정수 중 큰 값을 반환
+int max(int x, int y) {
+    if (x > y)
+        return x;
+    else
+        return y;
+}
+
+int main(void) {
+    int a, b, result;
+
+    // 2개의 정수 입력
+    printf("두 개의 정수를 입력하세요: ");
+    scanf("%d %d", &a, &b);
+
+    // max 함수 호출
+    result = max(a, b);
+
+    // 결과 출력
+    printf("더 큰 값은 %d입니다.\n", result);
+
+    return 0;
+}
