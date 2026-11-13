@@ -1,0 +1,100 @@
+import json
+import os
+from datetime import datetime
+
+FILE = "expenses.json"
+
+def load_data():
+    if os.path.exists(FILE):
+        with open(FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_data(data):
+    with open(FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+def add_expense(data):
+    category = input("지출 항목: ")
+
+    try:
+        amount = int(input("금액: "))
+        if amount <= 0:
+            print("금액은 0보다 커야 합니다.")
+            return
+    except ValueError:
+        print("올바른 금액을 입력하세요.")
+        return
+
+    memo = input("메모: ")
+
+    expense = {
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "category": category,
+        "amount": amount,
+        "memo": memo
+    }
+
+    data.append(expense)
+    save_data(data)
+    print("지출 등록 완료!")
+
+def show_expenses(data):
+    for item in data:
+        print(
+            item["date"],
+            item["category"],
+            f'{item["amount"]:,}원',
+            item["memo"]
+        )
+
+def analyze_expenses(data):
+    if not data:
+        print("지출 내역이 없습니다.")
+        return
+
+    total = sum(item["amount"] for item in data)
+    categories = {}
+
+    for item in data:
+        category = item["category"]
+        categories[category] = (
+            categories.get(category, 0) + item["amount"]
+        )
+
+    print("\n===== 소비 분석 =====")
+    print(f"총 지출: {total:,}원")
+
+    for category, amount in sorted(
+        categories.items(),
+        key=lambda x: x[1],
+        reverse=True
+    ):
+        ratio = amount / total * 100
+        print(f"{category}: {amount:,}원 ({ratio:.1f}%)")
+
+def main():
+    data = load_data()
+
+    while True:
+        print("\n===== 가계부 =====")
+        print("1. 지출 등록")
+        print("2. 지출 내역")
+        print("3. 소비 분석")
+        print("4. 종료")
+
+        choice = input("선택: ")
+
+        if choice == "1":
+            add_expense(data)
+        elif choice == "2":
+            show_expenses(data)
+        elif choice == "3":
+            analyze_expenses(data)
+        elif choice == "4":
+            break
+        else:
+            print("잘못된 선택입니다.")
+
+if __name__ == "__main__":
+    main()
