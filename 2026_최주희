@@ -1,0 +1,67 @@
+import json
+import os
+
+FILE = "students.json"
+
+def load_data():
+    if os.path.exists(FILE):
+        with open(FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_data(data):
+    with open(FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+def add_student(data):
+    name = input("학생 이름: ")
+    try:
+        score = float(input("점수: "))
+        if not 0 <= score <= 100:
+            raise ValueError
+    except ValueError:
+        print("올바른 점수를 입력하세요.")
+        return
+
+    data.append({"name": name, "score": score})
+    save_data(data)
+    print("등록 완료!")
+
+def display_students(data):
+    for s in data:
+        print(f"{s['name']} : {s['score']}점")
+
+def statistics(data):
+    if not data:
+        print("데이터가 없습니다.")
+        return
+
+    scores = [s["score"] for s in data]
+    print("평균:", sum(scores) / len(scores))
+    print("최고:", max(scores))
+    print("최저:", min(scores))
+
+def main():
+    data = load_data()
+
+    while True:
+        print("\n1. 학생 등록")
+        print("2. 전체 조회")
+        print("3. 성적 통계")
+        print("4. 종료")
+
+        choice = input("선택: ")
+
+        if choice == "1":
+            add_student(data)
+        elif choice == "2":
+            display_students(data)
+        elif choice == "3":
+            statistics(data)
+        elif choice == "4":
+            break
+        else:
+            print("잘못된 선택입니다.")
+
+if __name__ == "__main__":
+    main()
