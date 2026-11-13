@@ -1,0 +1,101 @@
+import json
+import os
+
+FILE = "books.json"
+
+def load_books():
+    if os.path.exists(FILE):
+        with open(FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_books(books):
+    with open(FILE, "w", encoding="utf-8") as f:
+        json.dump(books, f, ensure_ascii=False, indent=4)
+
+def add_book(books):
+    title = input("도서 제목: ")
+    author = input("저자: ")
+
+    books.append({
+        "title": title,
+        "author": author,
+        "available": True
+    })
+
+    save_books(books)
+    print("도서 등록 완료!")
+
+def show_books(books):
+    for i, book in enumerate(books, 1):
+        status = "대여 가능" if book["available"] else "대여 중"
+        print(f"{i}. {book['title']} / {book['author']} / {status}")
+
+def borrow_book(books):
+    show_books(books)
+
+    try:
+        index = int(input("대여할 도서 번호: ")) - 1
+        if not 0 <= index < len(books):
+            print("잘못된 번호입니다.")
+            return
+
+        if not books[index]["available"]:
+            print("이미 대여 중인 도서입니다.")
+            return
+
+        books[index]["available"] = False
+        save_books(books)
+        print("대여 완료!")
+
+    except ValueError:
+        print("숫자를 입력하세요.")
+
+def return_book(books):
+    show_books(books)
+
+    try:
+        index = int(input("반납할 도서 번호: ")) - 1
+        if not 0 <= index < len(books):
+            print("잘못된 번호입니다.")
+            return
+
+        if books[index]["available"]:
+            print("이미 반납된 도서입니다.")
+            return
+
+        books[index]["available"] = True
+        save_books(books)
+        print("반납 완료!")
+
+    except ValueError:
+        print("숫자를 입력하세요.")
+
+def main():
+    books = load_books()
+
+    while True:
+        print("\n===== 도서 관리 =====")
+        print("1. 도서 등록")
+        print("2. 도서 목록")
+        print("3. 도서 대여")
+        print("4. 도서 반납")
+        print("5. 종료")
+
+        choice = input("선택: ")
+
+        if choice == "1":
+            add_book(books)
+        elif choice == "2":
+            show_books(books)
+        elif choice == "3":
+            borrow_book(books)
+        elif choice == "4":
+            return_book(books)
+        elif choice == "5":
+            break
+        else:
+            print("다시 선택하세요.")
+
+if __name__ == "__main__":
+    main()
