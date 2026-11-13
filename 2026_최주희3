@@ -1,0 +1,58 @@
+import requests
+
+API_KEY = "YOUR_API_KEY"
+
+def get_weather(city):
+    url = "https://api.openweathermap.org/data/2.5/weather"
+
+    params = {
+        "q": city,
+        "appid": API_KEY,
+        "units": "metric",
+        "lang": "kr"
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            print("\n===== 날씨 정보 =====")
+            print("도시:", data["name"])
+            print("날씨:", data["weather"][0]["description"])
+            print("온도:", data["main"]["temp"], "°C")
+            print("체감 온도:", data["main"]["feels_like"], "°C")
+            print("습도:", data["main"]["humidity"], "%")
+            print("풍속:", data["wind"]["speed"], "m/s")
+
+        elif response.status_code == 404:
+            print("도시를 찾을 수 없습니다.")
+
+        else:
+            print("API 오류:", response.status_code)
+
+    except requests.exceptions.RequestException as e:
+        print("네트워크 오류:", e)
+
+def main():
+    while True:
+        print("\n===== 날씨 조회 프로그램 =====")
+        print("1. 날씨 검색")
+        print("2. 종료")
+
+        choice = input("선택: ")
+
+        if choice == "1":
+            city = input("도시 이름(영문): ")
+            get_weather(city)
+
+        elif choice == "2":
+            print("프로그램 종료")
+            break
+
+        else:
+            print("잘못된 입력입니다.")
+
+if __name__ == "__main__":
+    main()
